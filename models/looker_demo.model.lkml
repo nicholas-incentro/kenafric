@@ -2,6 +2,7 @@
 connection: "looker_demo"
 
 include: "/explores/inventory.explore.lkml"
+include: "/explores/orders.explore.lkml"
 
 # Datagroups define a caching policy for an Explore. To learn more,
 # use the Quick Help panel on the right to see documentation.
