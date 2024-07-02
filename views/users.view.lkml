@@ -2,8 +2,7 @@
 view: users {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: `still-sensor-360721.thelook_ecommerce.users` ;;
-  drill_fields: [id]
+  sql_table_name: `@{PROJECT}.@{SCHEMA_NAME_1}.users` ;;
 
   # This primary key is the unique key for this table in the underlying database.
   # You need to define a primary key in a view in order to join to other views.
@@ -36,12 +35,14 @@ view: users {
   dimension: city {
     type: string
     sql: ${TABLE}.city ;;
+    drill_fields: [street_address]
   }
 
   dimension: country {
     type: string
     map_layer_name: countries
     sql: ${TABLE}.country ;;
+    drill_fields: [state]
   }
   # Dates and timestamps can be represented in Looker using a dimension group of type: time.
   # Looker converts dates and timestamps to the specified timeframes within the dimension group.
@@ -55,11 +56,13 @@ view: users {
   dimension: email {
     type: string
     sql: ${TABLE}.email ;;
+    required_access_grants: [view_pii_data]
   }
 
   dimension: first_name {
     type: string
     sql: ${TABLE}.first_name ;;
+    required_access_grants: [view_pii_data]
   }
 
   dimension: gender {
@@ -70,52 +73,65 @@ view: users {
   dimension: last_name {
     type: string
     sql: ${TABLE}.last_name ;;
+    required_access_grants: [view_pii_data]
   }
 
   dimension: latitude {
     type: number
     sql: ${TABLE}.latitude ;;
+    hidden: yes
   }
 
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
+    hidden: yes
   }
 
   dimension: postal_code {
     type: string
     sql: ${TABLE}.postal_code ;;
+    required_access_grants: [view_pii_data]
   }
 
   dimension: state {
     type: string
     sql: ${TABLE}.state ;;
+    drill_fields: [city]
   }
 
   dimension: street_address {
     type: string
     sql: ${TABLE}.street_address ;;
+    required_access_grants: [view_pii_data]
   }
 
   dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;
   }
-  measure: count {
-    type: count
+  dimension: geopoint {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
+  }
+
+  measure: count_users {
+    type: count_distinct
+    sql: ${id} ;;
     drill_fields: [detail*]
   }
 
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
-	id,
-	last_name,
-	first_name,
-	events.count,
-	orders.count,
-	order_items.count
-	]
+  id,
+  last_name,
+  first_name,
+  events.count,
+  orders.count,
+  order_items.count
+  ]
   }
 
 }

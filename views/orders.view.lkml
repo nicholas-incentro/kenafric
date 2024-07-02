@@ -2,8 +2,7 @@
 view: orders {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: `still-sensor-360721.thelook_ecommerce.orders` ;;
-  drill_fields: [order_id]
+  sql_table_name: `@{PROJECT}.@{SCHEMA_NAME_1}.orders` ;;
 
   # This primary key is the unique key for this table in the underlying database.
   # You need to define a primary key in a view in order to join to other views.
@@ -47,7 +46,9 @@ view: orders {
 
   measure: total_num_of_item {
     type: sum
-    sql: ${num_of_item} ;;  }
+    sql: ${num_of_item} ;;
+    value_format_name: formatted_number
+    }
   measure: average_num_of_item {
     type: average
     sql: ${num_of_item} ;;  }
@@ -74,8 +75,10 @@ view: orders {
     # hidden: yes
     sql: ${TABLE}.user_id ;;
   }
-  measure: count {
-    type: count
+  measure: count_orders {
+    type: count_distinct
+    sql: ${order_id} ;;
+    value_format_name: formatted_number
     drill_fields: [order_id, users.last_name, users.id, users.first_name, order_items.count]
   }
 }
