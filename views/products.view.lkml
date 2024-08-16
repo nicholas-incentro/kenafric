@@ -10,6 +10,7 @@ view: products {
 
   dimension: id {
     primary_key: yes
+    description: "Unique Identifier of the product"
     type: number
     sql: ${TABLE}.id ;;
   }
@@ -18,16 +19,19 @@ view: products {
     # This dimension will be called "Brand" in Explore.
 
   dimension: brand {
+    description: "Name of the Brand"
     type: string
     sql: ${TABLE}.brand ;;
   }
 
   dimension: category {
+    description: "Category Name"
     type: string
     sql: ${TABLE}.category ;;
   }
 
   dimension: cost {
+    description: "Purchasing price"
     type: number
     sql: ${TABLE}.cost ;;
   }
@@ -37,36 +41,49 @@ view: products {
   # Click on the type parameter to see all the options in the Quick Help panel on the right.
 
   measure: total_cost {
+    description: "sum of the cost/purchasing price"
     type: sum
     sql: ${cost} ;;  }
   measure: average_cost {
+    description: "average cost"
     type: average
     sql: ${cost} ;;  }
 
   dimension: department {
+    description: "name of the department"
     type: string
     sql: ${TABLE}.department ;;
   }
 
   dimension: distribution_center_id {
+    description: "unique identifier of the distribution center"
     type: number
     # hidden: yes
     sql: ${TABLE}.distribution_center_id ;;
   }
 
   dimension: name {
+    description: "name of the product"
     type: string
     sql: ${TABLE}.name ;;
   }
 
   dimension: retail_price {
+    description: "the price that a customer will pay when purchasing a product at a retail store"
     type: number
     sql: ${TABLE}.retail_price ;;
   }
 
   dimension: sku {
+    description: "stock keeping unit"
     type: string
     sql: ${TABLE}.sku ;;
+  }
+  measure: count_products{
+    description: "count of distinct products"
+    type: count_distinct
+    sql: ${TABLE}.id ;;
+    drill_fields: [category,brand]
   }
 
 
