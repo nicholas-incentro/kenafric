@@ -1,4 +1,6 @@
 include: "/views/*"
+include: "/attributes/*.lkml"
+
 explore: inventory_items {
   join: products {
     type: left_outer

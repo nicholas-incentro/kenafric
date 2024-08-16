@@ -2,8 +2,7 @@
 view: order_items {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: `still-sensor-360721.thelook_ecommerce.order_items` ;;
-  drill_fields: [id]
+  sql_table_name: `@{PROJECT}.@{SCHEMA_NAME_1}.order_items` ;;
 
   # This primary key is the unique key for this table in the underlying database.
   # You need to define a primary key in a view in order to join to other views.
@@ -20,6 +19,7 @@ view: order_items {
     type: time
     timeframes: [raw, time, date, week, month, quarter, year]
     sql: ${TABLE}.created_at ;;
+    drill_fields: [detail*]
   }
 
   dimension_group: delivered {
@@ -66,10 +66,14 @@ view: order_items {
 
   measure: total_sale_price {
     type: sum
-    sql: ${sale_price} ;;  }
+    sql: ${sale_price} ;;
+    value_format_name: formatted_number
+    }
   measure: average_sale_price {
     type: average
-    sql: ${sale_price} ;;  }
+    sql: ${sale_price} ;;
+    value_format_name: formatted_number
+    }
 
   dimension_group: shipped {
     type: time
@@ -87,24 +91,19 @@ view: order_items {
     # hidden: yes
     sql: ${TABLE}.user_id ;;
   }
-  measure: count {
-    type: count
+  measure: count_order_items {
+    type: count_distinct
+    sql: ${id} ;;
     drill_fields: [detail*]
+    value_format_name: formatted_number
   }
 
   # ----- Sets of fields for drilling ------
   set: detail {
     fields: [
-	id,
-	users.last_name,
-	users.id,
-	users.first_name,
-	inventory_items.id,
-	inventory_items.product_name,
-	products.name,
-	products.id,
-	orders.order_id
-	]
+  users.country,
+  products.department,
+  ]
   }
 
 }

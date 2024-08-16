@@ -1,8 +1,8 @@
 # The name of this view in Looker is "Distribution Centers"
 view: distribution_centers {
 
-  sql_table_name: `still-sensor-360721.thelook_ecommerce.distribution_centers` ;;
-  drill_fields: [id]
+  sql_table_name: `@{PROJECT}.@{SCHEMA_NAME_1}.distribution_centers` ;;
+  drill_fields: [name]
 
 
   dimension: id {
@@ -26,6 +26,12 @@ view: distribution_centers {
   dimension: longitude {
     type: number
     sql: ${TABLE}.longitude ;;
+  }
+
+  dimension: geopoint {
+    type: location
+    sql_latitude: ${latitude} ;;
+    sql_longitude: ${longitude} ;;
   }
 
   dimension: name {

@@ -2,8 +2,7 @@
 view: products {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: `still-sensor-360721.thelook_ecommerce.products` ;;
-  drill_fields: [id]
+  sql_table_name: `@{PROJECT}.@{SCHEMA_NAME_1}.products` ;;
 
   # This primary key is the unique key for this table in the underlying database.
   # You need to define a primary key in a view in order to join to other views.
@@ -22,12 +21,14 @@ view: products {
     description: "Name of the Brand"
     type: string
     sql: ${TABLE}.brand ;;
+    drill_fields: [name]
   }
 
   dimension: category {
     description: "Category Name"
     type: string
     sql: ${TABLE}.category ;;
+    drill_fields: [brand]
   }
 
   dimension: cost {
@@ -53,6 +54,7 @@ view: products {
     description: "name of the department"
     type: string
     sql: ${TABLE}.department ;;
+    drill_fields: [category]
   }
 
   dimension: distribution_center_id {
@@ -66,6 +68,7 @@ view: products {
     description: "name of the product"
     type: string
     sql: ${TABLE}.name ;;
+    drill_fields: [order_items.id]
   }
 
   dimension: retail_price {

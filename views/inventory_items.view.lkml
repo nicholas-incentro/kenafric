@@ -2,8 +2,7 @@
 view: inventory_items {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: `still-sensor-360721.thelook_ecommerce.inventory_items` ;;
-  drill_fields: [id]
+  sql_table_name: `@{PROJECT}.@{SCHEMA_NAME_1}.inventory_items` ;;
 
   # This primary key is the unique key for this table in the underlying database.
   # You need to define a primary key in a view in order to join to other views.
@@ -28,7 +27,9 @@ view: inventory_items {
 
   measure: total_cost {
     type: sum
-    sql: ${cost} ;;  }
+    sql: ${cost} ;;
+    value_format_name: formatted_number
+    }
   measure: average_cost {
     type: average
     sql: ${cost} ;;  }
@@ -87,9 +88,10 @@ view: inventory_items {
     timeframes: [raw, time, date, week, month, quarter, year]
     sql: ${TABLE}.sold_at ;;
   }
-  measure: count_items {
+  measure: count_inventory_items {
     type: count_distinct
     sql: ${id} ;;
+    value_format_name: formatted_number
     drill_fields: [id, product_name, products.name, products.id, order_items.count]
   }
 }
