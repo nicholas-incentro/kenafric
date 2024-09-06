@@ -69,11 +69,35 @@ view: order_items {
     sql: ${sale_price} ;;
     value_format_name: formatted_number
     }
+  # measure: average_sale_price {
+  #   type: average
+  #   sql: ${sale_price} ;;
+  #   value_format_name: formatted_number
+  #   }
   measure: average_sale_price {
     type: average
     sql: ${sale_price} ;;
-    value_format_name: formatted_number
-    }
+    drill_fields: [detail*]
+    value_format_name: usd_0
+  }
+
+  measure: order_item_count {
+    type: count
+    drill_fields: [detail*]
+  }
+
+  measure: order_count {
+    type: count_distinct
+    sql: ${order_id} ;;
+  }
+
+
+  measure: total_revenue_from_completed_orders {
+    type: sum
+    sql: ${sale_price} ;;
+    filters: [status: "Complete"]
+    value_format_name: usd
+  }
 
   dimension_group: shipped {
     type: time
@@ -103,6 +127,12 @@ view: order_items {
     fields: [
   users.country,
   products.department,
+  id,
+      users.last_name,
+      users.id,
+      users.first_name,
+      inventory_items.id,
+      inventory_items.product_name
   ]
   }
 
