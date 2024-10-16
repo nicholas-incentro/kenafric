@@ -14,6 +14,7 @@ view: claims_view {
   dimension: claim_amount {
     type: number
     sql: ${TABLE}.claim_amount ;;
+    value_format_name: formatted_number
   }
 
   # A measure is a field that uses a SQL aggregate function. Here are defined sum and average
