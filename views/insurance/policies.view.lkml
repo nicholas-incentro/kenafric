@@ -62,11 +62,15 @@ view: policies {
 
   measure: total_premium {
     type: sum
-    sql: ${premium} ;;  }
+    sql: ${premium} ;;
+    value_format_name: formatted_number
+  }
 
   measure: average_premium {
     type: average
-    sql: ${premium} ;;  }
+    sql: ${premium} ;;
+    value_format_name: formatted_number
+  }
 
   dimension: product {
     type: string

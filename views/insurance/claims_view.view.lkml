@@ -69,7 +69,7 @@ view: claims_view {
     type: location
     sql_longitude: ${longitude};;
     sql_latitude: ${latitude} ;;
-    drill_fields: [vehicle_identification_number]
+    drill_fields: [vehicle_identification_number, vehicle_make, vehicle_model, policy_type, incident_severity, sum_insured, claim_amount]
   }
 
   dimension: policy_holder_id {
@@ -101,7 +101,7 @@ view: claims_view {
     type: sum
     sql: ${sum_insured} ;;
     value_format_name: formatted_number
-    drill_fields: [vehicle_make, vehicle_model, policy_type, incident_severity, sum_insured, claim_amount]
+    drill_fields:  [vehicle_identification_number, vehicle_make, vehicle_model, policy_type, incident_severity, sum_insured, claim_amount]
   }
 
   dimension: premium {
@@ -113,7 +113,7 @@ view: claims_view {
     type: sum
     sql: ${premium} ;;
     value_format_name: formatted_number
-    drill_fields: [vehicle_make, vehicle_model, policy_type, sum_insured]
+    drill_fields:  [vehicle_identification_number, vehicle_make, vehicle_model, policy_type, incident_severity, sum_insured, claim_amount]
   }
 
   dimension: vehicle_identification_number {
@@ -133,7 +133,7 @@ view: claims_view {
   measure: total_caims {
     type: count_distinct
     sql: ${claim_id} ;;
-    drill_fields: [vehicle_make, vehicle_model, policy_type, sum_insured]
+    drill_fields:  [vehicle_identification_number, vehicle_make, vehicle_model, policy_type, incident_severity, sum_insured, claim_amount]
   }
 
   # measure: loss_ratio {
