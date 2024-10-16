@@ -38,4 +38,8 @@ view: distribution_centers {
     type: string
     sql: ${TABLE}.name ;;
   }
+  measure: count {
+    type: count
+    drill_fields: [id, name, products.count]
+  }
 }
