@@ -9,6 +9,7 @@ view: claims {
   # You need to define a primary key in a view in order to join to other views.
 
   dimension: claim_id {
+    description:" a unique identifier of a formal request by a policyholder to the company for coverage or compensation for a covered loss or policy event"
     primary_key: yes
     type: string
     sql: ${TABLE}.claim_id ;;

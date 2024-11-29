@@ -52,6 +52,7 @@ view: policies {
   }
 
   dimension: premium {
+    description: "the amount of money that you pay for an insurance policy"
     type: number
     sql: ${TABLE}.premium ;;
   }
@@ -114,6 +115,7 @@ view: policies {
   }
 
   measure: loss_ratio {
+    description: "losses an insurer incurs due to paid claims as a percentage of premiums earned"
     type: number
     sql: ${claims.total_claim_amount}/${total_premium} ;;
     value_format_name: decimal_2
