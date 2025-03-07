@@ -1,7 +1,10 @@
-connection: "looker_demo"
+connection: "bi_demo"
 
-include: "/views/*.view.lkml"                # include all views in the views/ folder in this project
-# include: "/**/*.view.lkml"                 # include all views in this project
+include: "/explores/demo/performance.explore.lkml"
+include: "/explores/internal/incentro.explore.lkml"
+
+# include all views in the views/ folder in this project
+             # include all views in this project
 # include: "my_dashboard.dashboard.lookml"   # include a LookML dashboard called my_dashboard
 
 # # Select the views that should be a part of this model,
