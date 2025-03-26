@@ -65,6 +65,7 @@ view: account_invoice {
   measure: sum_mrr {
     type: sum
     sql: ${TABLE}.MRR ;;
+    value_format_name: usd
   }
   measure: total_deductions {
     type: sum
@@ -75,15 +76,16 @@ view: account_invoice {
     label: "Gross Revenue"
     type: sum
     sql: ${TABLE}.Amount;;
-    value_format_name: decimal_2
+    value_format_name: usd
     drill_fields: [detail*, gross_revenue]
   }
   measure: sum_sale_price {
     label: "Net Revenue"
     type: sum
     sql: ${sale_price};;
-    value_format_name: decimal_2
+    value_format_name: usd
     drill_fields: [detail*, sum_sale_price]
+
   }
   measure: gross_margin {
     type: number
@@ -114,7 +116,7 @@ view: account_invoice {
   measure: arr {
     type: number
     sql: ${sum_mrr}*12 ;;
-    value_format_name: decimal_2
+    value_format_name: usd
     drill_fields: [products.business_line, detail*, arr]
   }
   measure: count {

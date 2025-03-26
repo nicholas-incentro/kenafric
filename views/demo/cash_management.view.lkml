@@ -32,9 +32,11 @@ view: cash_management {
   measure: amount {
     type: sum
     sql:  amount_USD_;;
+    value_format_name: usd
   }
   measure: balance {
     type: sum
     sql:  Balance__USD_;;
+    value_format_name: usd
   }
 }

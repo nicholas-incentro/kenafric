@@ -37,9 +37,11 @@ view: aged_debtors {
   measure: total_amount_owed {
     type: sum
     sql: ${amount_owed} ;;
+    value_format_name: usd
   }
   measure: total_days_overdue {
     type: sum
     sql: ${days_overdue} ;;
+    value_format_name: usd
   }
 }

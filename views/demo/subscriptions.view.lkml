@@ -36,7 +36,7 @@ view: subscriptions {
   measure: amount {
     type: sum
     sql: ${change_value} ;;
-    value_format_name: decimal_2
+    value_format_name: usd
     drill_fields: [subscription_id]
   }
 }

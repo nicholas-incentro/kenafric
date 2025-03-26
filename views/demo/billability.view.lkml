@@ -26,6 +26,7 @@ view: billability {
   dimension: hourly_rate {
     type: number
     sql: ${TABLE}.Hourly_Rate ;;
+    value_format_name: usd
   }
   dimension: hours_worked {
     type: number
