@@ -465,7 +465,7 @@
     title: "Engineer Load vs. Completion %"
     model: lidl_project_tracker
     explore: lidl_tracker
-    type: looker_bar
+    type: looker_column
     fields: [lidl_tracker.incentro_owner, lidl_tracker.count_active_wip, lidl_tracker.percent_completion]
     sorts: [lidl_tracker.count_active_wip desc]
     limit: 15
