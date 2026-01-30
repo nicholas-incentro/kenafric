@@ -2,162 +2,222 @@ view: lidl_tracker {
   sql_table_name: `still-sensor-360721.datastream.lidl_tracker` ;;
   drill_fields: [file_details*]
 
-  # --------------------------------------------------------------------------
-  # ID & Primary Keys
-  # --------------------------------------------------------------------------
+  # ==========================================================================
+  # 🔑 IDs & PRIMARY KEYS
+  # ==========================================================================
 
   dimension: tracker_id {
     primary_key: yes
     type: number
     sql: ${TABLE}.tracker_id ;;
-    hidden: yes # Usually hidden unless needed for debugging
+    hidden: yes
   }
 
-  dimension: file_id {
-    label: "File ID (Name/Owner)"
-    group_label: "File Meta Data"
-    type: string
-    sql: ${TABLE}.File_ID ;;
-  }
+  # ==========================================================================
+  # 🏢 METADATA & ORGANIZATION
+  # ==========================================================================
 
-  # --------------------------------------------------------------------------
-  # File Details
-  # --------------------------------------------------------------------------
-
-  dimension: file_name {
-    group_label: "File Meta Data"
+  dimension: department {
+    label: "Department"
+    description: "The Lidl Department owning the file"
+    group_label: "Organization"
     type: string
+    # Mapped per instruction: File_Name column = Department
     sql: ${TABLE}.File_Name ;;
+    drill_fields: [lidl_file_owner, real_file_name, count_active_wip]
+  }
+
+  dimension: lidl_file_owner {
+    label: "Lidl File Owner"
+    description: "The individual at Lidl responsible for this file"
+    group_label: "Organization"
+    type: string
+    # Mapped per instruction: File_ID column = Owner
+    sql: ${TABLE}.File_ID ;;
+    drill_fields: [real_file_name, current_pipeline_stage, risk_reason]
+  }
+
+  dimension: real_file_name {
+    label: "File Name"
+    description: "The actual name of the file being migrated"
+    group_label: "File Details"
+    type: string
+    # Mapped per instruction: File column = File Name
+    sql: ${TABLE}.File ;;
     link: {
-      label: "Google Search File"
+      label: "🔎 Google Search File"
       url: "https://www.google.com/search?q={{ value }}"
+      icon_url: "https://www.google.com/favicon.ico"
     }
   }
 
-  dimension: file_original_name {
-    label: "Original Filename"
-    group_label: "File Meta Data"
-    type: string
-    sql: ${TABLE}.File ;;
-  }
-
   dimension: tshirt_size {
-    description: "Estimated complexity of the file (S, M, L, XL)"
-    group_label: "File Meta Data"
+    label: "Complexity (T-Shirt)"
+    description: "S, M, L, XL"
+    group_label: "File Details"
     type: string
     sql: ${TABLE}.Tshirt_Size ;;
+    order_by_field: tshirt_sort_index
+  }
+
+  dimension: tshirt_sort_index {
+    hidden: yes
+    type: number
+    sql:
+      CASE
+        WHEN ${tshirt_size} = 'S' THEN 1
+        WHEN ${tshirt_size} = 'M' THEN 2
+        WHEN ${tshirt_size} = 'L' THEN 3
+        WHEN ${tshirt_size} = 'XL' THEN 4
+        ELSE 5
+      END ;;
   }
 
   dimension: priority {
-    group_label: "File Meta Data"
+    group_label: "File Details"
     type: string
     sql: ${TABLE}.Priority ;;
+    html:
+    {% if value == 'High' %} <span style="color:red; font-weight:bold">{{ value }}</span>
+    {% elsif value == 'Medium' %} <span style="color:orange">{{ value }}</span>
+    {% else %} <span style="color:green">{{ value }}</span>
+    {% endif %} ;;
   }
 
-  dimension: external_files_referenced {
-    group_label: "File Meta Data"
-    type: string
-    sql: ${TABLE}.External_files_referenced ;; # Updated to match standard CSV ingestion naming
-  }
-
-  # --------------------------------------------------------------------------
-  # Ownership & People
-  # --------------------------------------------------------------------------
-
-  dimension: file_owner {
-    group_label: "Ownership"
-    type: string
-    sql: ${TABLE}.File_Owner ;;
-  }
+  # ==========================================================================
+  # 👷‍♀️ EXECUTION TEAM (INCENTRO)
+  # ==========================================================================
 
   dimension: incentro_owner {
-    group_label: "Ownership"
+    label: "Incentro Engineer"
+    description: "The engineer responsible for the migration work"
+    group_label: "Execution Team"
     type: string
     sql: ${TABLE}.Incentro_Owner ;;
+    drill_fields: [real_file_name, current_pipeline_stage, status_uat]
   }
 
   dimension: file_sent_to_incentro {
-    group_label: "Ownership"
-    description: "Has the file been physically transferred?"
+    label: "Handover to Incentro?"
+    group_label: "Execution Team"
     type: yesno
-    # Robust check: Handles 'Yes', 'yes', '1' or nulls
-    sql: LOWER(${TABLE}.File_Sent_to_Incentro) LIKE 'yes%' ;;
+    sql: ${TABLE}.File_Sent_to_Incentro ;;
   }
 
-  # --------------------------------------------------------------------------
-  # Project Stages (Progress)
-  # --------------------------------------------------------------------------
-
-  # I have added HTML formatting here.
-  # In a dashboard, "Completed" will be green, "Stuck" will be red.
+  # ==========================================================================
+  # 🚦 SEQUENTIAL PIPELINE STAGES
+  # ==========================================================================
 
   dimension: status_analyzed {
-    label: "1. Analysis Status"
-    group_label: "Project Stages"
+    label: "1. Analysis"
+    group_label: "Stages"
     type: string
     sql: ${TABLE}.Analysed ;;
     html: @{status_color_formatting} ;;
   }
 
-  dimension: status_discovery_definition {
-    label: "2. Discovery & Definition"
-    group_label: "Project Stages"
+  dimension: status_discovery {
+    label: "2. Discovery"
+    group_label: "Stages"
     type: string
-    sql: ${TABLE}.Discovey___Defination ;; # Matches your SQL column
+    sql: ${TABLE}.Discovey___Defination ;;
     html: @{status_color_formatting} ;;
   }
 
   dimension: status_build {
-    label: "3. Build Status"
-    group_label: "Project Stages"
+    label: "3. Build"
+    group_label: "Stages"
     type: string
     sql: ${TABLE}.Build ;;
     html: @{status_color_formatting} ;;
   }
 
   dimension: status_test {
-    label: "4. Test Status"
-    group_label: "Project Stages"
+    label: "4. Test"
+    group_label: "Stages"
     type: string
     sql: ${TABLE}.Test ;;
     html: @{status_color_formatting} ;;
   }
 
   dimension: status_uat {
-    label: "5. UAT Status"
-    group_label: "Project Stages"
-    description: "User Acceptance Testing - Final Stage"
+    label: "5. UAT"
+    group_label: "Stages"
     type: string
     sql: ${TABLE}.UAT ;;
     html: @{status_color_formatting} ;;
   }
 
-  dimension: file_sent_to_folder {
-    label: "6. Sent to Folder"
-    group_label: "Project Stages"
+  # ==========================================================================
+  # 🧠 LOGIC: STAGE & HEALTH CALCULATIONS
+  # ==========================================================================
+
+  dimension: current_pipeline_stage {
+    label: "Current Stage"
+    description: "The active stage where the file is currently sitting."
     type: string
-    sql: ${TABLE}.File_sent_to_Respective_Folder ;;
+    sql:
+      CASE
+        WHEN LOWER(${status_uat}) = 'completed' THEN '6. Done'
+        WHEN LOWER(${status_uat}) IS NOT NULL THEN '5. UAT'
+        WHEN LOWER(${status_test}) IS NOT NULL THEN '4. Test'
+        WHEN LOWER(${status_build}) IS NOT NULL THEN '3. Build'
+        WHEN LOWER(${status_discovery}) IS NOT NULL THEN '2. Discovery'
+        WHEN LOWER(${status_analyzed}) IS NOT NULL THEN '1. Analysis'
+        ELSE '0. Backlog'
+      END ;;
+    order_by_field: stage_sort_order
   }
 
-  # --------------------------------------------------------------------------
-  # Notes
-  # --------------------------------------------------------------------------
-
-  dimension: notes_developer {
-    group_label: "Notes"
-    type: string
-    sql: ${TABLE}.Notes__Developer ;;
+  dimension: stage_sort_order {
+    hidden: yes
+    type: number
+    sql:
+      CASE
+        WHEN ${current_pipeline_stage} = '6. Done' THEN 7
+        WHEN ${current_pipeline_stage} = '5. UAT' THEN 6
+        WHEN ${current_pipeline_stage} = '4. Test' THEN 5
+        WHEN ${current_pipeline_stage} = '3. Build' THEN 4
+        WHEN ${current_pipeline_stage} = '2. Discovery' THEN 3
+        WHEN ${current_pipeline_stage} = '1. Analysis' THEN 2
+        ELSE 1
+      END ;;
   }
 
-  dimension: notes_file_owner {
-    group_label: "Notes"
+  dimension: overall_health {
+    label: "Health Status"
     type: string
-    sql: ${TABLE}.Notes__File_Owner ;;
+    sql:
+      CASE
+        WHEN LOWER(${status_uat}) = 'completed' THEN 'Completed'
+        WHEN LOWER(${status_build}) LIKE '%stuck%' OR LOWER(${status_test}) LIKE '%stuck%' OR LOWER(${status_uat}) LIKE '%stuck%' THEN 'At Risk'
+        WHEN ${current_pipeline_stage} = '0. Backlog' THEN 'Not Started'
+        ELSE 'On Track'
+      END ;;
+    html:
+    {% if value == 'Completed' %} <span style="color: white; background-color: #137333; padding: 3px 8px; border-radius: 4px;">{{ value }}</span>
+    {% elsif value == 'At Risk' %} <span style="color: white; background-color: #d93025; padding: 3px 8px; border-radius: 4px;">{{ value }}</span>
+    {% elsif value == 'On Track' %} <span style="color: white; background-color: #1A73E8; padding: 3px 8px; border-radius: 4px;">{{ value }}</span>
+    {% else %} <span style="color: black; background-color: #F9AB00; padding: 3px 8px; border-radius: 4px;">{{ value }}</span>
+    {% endif %} ;;
   }
 
-  # --------------------------------------------------------------------------
-  # Measures (Analytics)
-  # --------------------------------------------------------------------------
+  dimension: risk_reason {
+    label: "Risk Reason"
+    description: "Derived reason for why a file is stuck or at risk"
+    type: string
+    sql:
+      CASE
+        WHEN LOWER(${status_build}) LIKE '%stuck%' THEN 'Build Blocked'
+        WHEN LOWER(${status_test}) LIKE '%stuck%' THEN 'Testing Blocked'
+        WHEN LOWER(${status_uat}) LIKE '%stuck%' THEN 'UAT Blocked'
+        ELSE NULL
+      END ;;
+  }
+
+  # ==========================================================================
+  # 🔢 METRICS & KPIs
+  # ==========================================================================
 
   measure: count {
     label: "Total Files"
@@ -165,40 +225,101 @@ view: lidl_tracker {
     drill_fields: [file_details*]
   }
 
-  measure: count_completed_files {
-    description: "Count of files where UAT is marked as Completed"
+  measure: count_completed {
+    label: "Files Completed"
     type: count
     filters: [status_uat: "Completed"]
     drill_fields: [file_details*]
   }
 
-  measure: count_stuck_files {
-    description: "Count of files currently marked as Stuck in any stage"
-    type: count
-    filters: [status_build: "Stuck", status_test: "Stuck", status_uat: "Stuck"]
-    drill_fields: [file_details*]
-  }
-
-  measure: percentage_completion {
-    description: "Percentage of total files that have passed UAT"
+  measure: percent_completion {
+    label: "% Completion"
     type: number
     value_format_name: percent_1
-    sql: 1.0 * ${count_completed_files} / NULLIF(${count},0) ;;
+    sql: 1.0 * ${count_completed} / NULLIF(${count}, 0) ;;
     drill_fields: [file_details*]
   }
 
-  # --------------------------------------------------------------------------
-  # Sets
-  # --------------------------------------------------------------------------
+  measure: count_stuck {
+    label: "⚠️ Blocked Files"
+    type: sum
+    sql:
+      CASE
+        WHEN LOWER(${status_build}) LIKE '%stuck%' THEN 1
+        WHEN LOWER(${status_test}) LIKE '%stuck%' THEN 1
+        WHEN LOWER(${status_uat}) LIKE '%stuck%' THEN 1
+        ELSE 0
+      END ;;
+    drill_fields: [file_details*, risk_reason]
+  }
+
+  measure: count_active_wip {
+    label: "Active WIP"
+    description: "Files currently being worked on (Not Backlog, Not Done)"
+    type: count
+    filters: [current_pipeline_stage: "-0. Backlog, -6. Done"]
+    drill_fields: [file_details*]
+  }
+
+  measure: count_high_priority_active {
+    label: "Active High Priority"
+    description: "High Priority files currently in progress"
+    type: count
+    filters: [priority: "High", current_pipeline_stage: "-0. Backlog, -6. Done"]
+    drill_fields: [file_details*]
+  }
+
+  # --- Operational Gap Metrics ---
+
+  measure: count_unassigned_active {
+    label: "🚨 Orphaned Files (Active & Unassigned)"
+    description: "Files that have started but have NO Incentro Owner assigned."
+    type: count
+    filters: [current_pipeline_stage: "-0. Backlog, -6. Done", incentro_owner: "null"]
+    drill_fields: [real_file_name, department, current_pipeline_stage]
+  }
+
+  measure: risk_density {
+    label: "Risk Density %"
+    description: "Percentage of Active WIP files that are currently Stuck. Higher is worse."
+    type: number
+    value_format_name: percent_1
+    sql: 1.0 * ${count_stuck} / NULLIF(${count_active_wip}, 0) ;;
+    drill_fields: [department, count_stuck, count_active_wip]
+  }
+
+  # --- Productivity Metrics ---
+
+  measure: engineer_velocity {
+    label: "Avg Files per Engineer"
+    type: number
+    value_format_name: decimal_1
+    sql: 1.0 * ${count_active_wip} / NULLIF(COUNT(DISTINCT ${incentro_owner}), 0) ;;
+    drill_fields: [file_details*]
+  }
+
+  # --- Funnel Metrics ---
+  measure: funnel_1_analyzed { group_label: "Funnel" type: count filters: [status_analyzed: "Completed"] }
+  measure: funnel_2_discovery { group_label: "Funnel" type: count filters: [status_discovery: "Completed"] }
+  measure: funnel_3_build { group_label: "Funnel" type: count filters: [status_build: "Completed"] }
+  measure: funnel_4_test { group_label: "Funnel" type: count filters: [status_test: "Completed"] }
+  measure: funnel_5_uat { group_label: "Funnel" type: count filters: [status_uat: "Completed"] }
+
+  # ==========================================================================
+  # 📦 DRILL SETS
+  # ==========================================================================
 
   set: file_details {
     fields: [
-      file_name,
-      file_owner,
-      incentro_owner,
+      real_file_name,
+      department,
+      priority,
       tshirt_size,
-      status_build,
-      status_uat
+      lidl_file_owner,
+      incentro_owner,
+      current_pipeline_stage,
+      risk_reason,
+      overall_health
     ]
   }
 }
