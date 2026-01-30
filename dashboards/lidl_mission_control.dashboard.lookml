@@ -3,7 +3,7 @@
   description: "End-to-end visibility: Scope, Pipeline Velocity, Risk, and Resource Productivity."
   layout: newspaper
   preferred_viewer: dashboards-next
-  crossfilter_enabled: true
+  crossfilter_enabled: false
   auto_run: true
 
   # ===========================================================================
