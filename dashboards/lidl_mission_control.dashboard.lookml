@@ -1,5 +1,5 @@
 - dashboard: lidl_mission_control_comprehensive
-  title: "🚀 Lidl Migration: Mission Control Center"
+  title: "Mission Control Center"
   description: "End-to-end visibility: Scope, Pipeline Velocity, Risk, and Resource Productivity."
   layout: newspaper
   preferred_viewer: dashboards-next
@@ -101,17 +101,44 @@
     width: 4
     height: 4
 
+  # - name: kpi_completion
+  #   title: "Overall Completion"
+  #   model: lidl_project_tracker
+  #   explore: lidl_tracker
+  #   type: single_value
+  #   fields: [lidl_tracker.percent_completion]
+  #   listen:
+  #     Department: lidl_tracker.department
+  #     Priority: lidl_tracker.priority
+  #     Incentro Engineer: lidl_tracker.incentro_owner
+  #     Health: lidl_tracker.overall_health
+  #   note:
+  #     text: "Percentage of total scope that has successfully passed UAT."
+  #     state: collapsed
+  #     display: hover
+  #   custom_color_enabled: true
+  #   enable_conditional_formatting: true
+  #   conditional_formatting: [
+  #     {type: greater than, value: 0.9, background_color: "#E6F4EA", font_color: "#137333"},
+  #     {type: less than, value: 0.5, background_color: "#FCE8E6", font_color: "#d93025"}
+  #   ]
+  #   font_size: medium
+  #   row: 0
+  #   col: 8
+  #   width: 4
+  #   height: 4
+
   - name: kpi_completion
     title: "Overall Completion"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
-    fields: [lidl_tracker.percent_completion]
+    # FIX: Changed 'percent_completion' to 'percent_dev_completion'
+    fields: [lidl_tracker.percent_dev_completion]
     listen:
       Department: lidl_tracker.department
       Priority: lidl_tracker.priority
       Incentro Engineer: lidl_tracker.incentro_owner
-      Health: lidl_tracker.overall_health
     note:
       text: "Percentage of total scope that has successfully passed UAT."
       state: collapsed
@@ -122,7 +149,6 @@
       {type: greater than, value: 0.9, background_color: "#E6F4EA", font_color: "#137333"},
       {type: less than, value: 0.5, background_color: "#FCE8E6", font_color: "#d93025"}
     ]
-    font_size: medium
     row: 0
     col: 8
     width: 4
@@ -466,7 +492,7 @@
     model: lidl_project_tracker
     explore: lidl_tracker
     type: looker_column
-    fields: [lidl_tracker.incentro_owner, lidl_tracker.count_active_wip, lidl_tracker.percent_completion]
+    fields: [lidl_tracker.incentro_owner, lidl_tracker.count_active_wip, lidl_tracker.percent_dev_completion]
     sorts: [lidl_tracker.count_active_wip desc]
     limit: 15
     listen:
@@ -502,7 +528,7 @@
     model: lidl_project_tracker
     explore: lidl_tracker
     type: looker_bar
-    fields: [lidl_tracker.department, lidl_tracker.count_completed, lidl_tracker.count_stuck, lidl_tracker.count_active_wip]
+    fields: [lidl_tracker.department, lidl_tracker.count_dev_completed, lidl_tracker.count_stuck, lidl_tracker.count_active_wip]
     sorts: [lidl_tracker.count_active_wip desc]
     stacking: normal
     limit: 15
