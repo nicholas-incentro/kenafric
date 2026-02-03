@@ -542,6 +542,13 @@ view: lidl_tracker {
     sql: 1.0 * ${count_dev_completed} / NULLIF(${count}, 0) ;;
   }
 
+  measure: percent_stagnation_safety {
+    label: "% Stagnation Safety"
+    type: number
+    value_format_name: percent_1
+    sql: ${count_pending_client_action} / NULLIF((${count_pending_client_action}+${count_dev_completed}), 0) ;;
+  }
+
   measure: count_active_wip {
     label: "Active WIP"
     type: count

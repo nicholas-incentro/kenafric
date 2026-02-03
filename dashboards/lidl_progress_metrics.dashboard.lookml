@@ -181,16 +181,16 @@
     width: 8
     height: 5
 
-  - name: kpi_schedule_adherence
-    title: "Pipeline Stability Score"
+  - name: kpi_stagnation_quality
+    title: "Stagnation Safety Score"
     note:
-      text: "% of Scope Not Blocked or At Risk"
+      text: "Ratio: Client Wait (Safe) vs. Internal Stuck. 100% Score: Great! Everything stopped is waiting on the client. 0% Score: Critical! Everything stopped is stuck internally"
       state: collapsed
       display: hover
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
-    fields: [lidl_tracker.percent_dev_completion]
+    fields: [lidl_tracker.percent_stagnation_safety]
     filters:
       lidl_tracker.overall_health: "On Track, Completed"
     listen:
@@ -204,7 +204,6 @@
     col: 16
     width: 8
     height: 5
-
 
 
   # ===========================================================================
