@@ -1,5 +1,5 @@
 - dashboard: lidl_gws_transition_metrics
-  title: "Lidl Executive Progress Report"
+  title: "Executive Progress Report"
   description: "Executive hierarchy: Real-time Status -> Velocity Targets -> Engineering Breakdown."
   layout: newspaper
   preferred_viewer: dashboards-next
