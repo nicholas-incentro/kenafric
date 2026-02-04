@@ -52,7 +52,7 @@
     height: 4
 
   - name: total_analyzed_kpi
-    title: "Phase 1: Analysis Complete"
+    title: "Analysed"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
@@ -66,7 +66,7 @@
     height: 4
 
   - name: kpi_total_files_completed
-    title: "Final Completion (UAT)"
+    title: "Tested"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
@@ -80,7 +80,7 @@
     height: 4
 
   - name: kpi_total_files_stuck
-    title: "Active Stagnation Alert"
+    title: "Stuck"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
