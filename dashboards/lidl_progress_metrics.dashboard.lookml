@@ -1,17 +1,17 @@
 - dashboard: lidl_gws_transition_metrics
-  title: "Progress Report"
-  description: "Executive hierarchy: Status -> Pace -> Detailed Breakdown."
+  title: "Lidl Executive Progress Report"
+  description: "Executive hierarchy: Real-time Status -> Velocity Targets -> Engineering Breakdown."
   layout: newspaper
   preferred_viewer: dashboards-next
   crossfilter_enabled: false
   auto_run: true
 
   # ---------------------------------------------------------------------------
-  # FILTERS
+  # GLOBAL FILTERS
   # ---------------------------------------------------------------------------
   filters:
   - name: Department
-    title: "Department"
+    title: "Lidl Department"
     type: field_filter
     model: lidl_project_tracker
     explore: lidl_tracker
@@ -26,7 +26,7 @@
   elements:
 
   # ===========================================================================
-  # TIER 1: HIGH-LEVEL STATUS (All Single Tiles Up)
+  # TIER 1: CURRENT HEALTH SNAPSHOT
   # ===========================================================================
 
   - name: title_status
@@ -38,107 +38,75 @@
     height: 2
 
   - name: kpi_total_scope
-    title: "Total Scope (Files)"
+    title: "Total Migration Scope"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
     fields: [lidl_tracker.count]
     listen:
       Department: lidl_tracker.department
-    note:
-      text: "Total number of files identified for migration."
-      state: collapsed
-      display: hover
+    custom_color: "#5F6368"
     row: 2
     col: 0
     width: 6
     height: 4
 
-
-    # Using the Single Value type with 'progress' style creates a clean linear gauge.
-  - name: kpi_total_files_received
-    title: "Total files received"
+  - name: total_analyzed_kpi
+    title: "Phase 1: Analysis Complete"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
-    fields: [lidl_tracker.total_files_received]
+    fields: [lidl_tracker.funnel_1_analyzed]
     listen:
       Department: lidl_tracker.department
-    note:
-      text: "Count of files received."
-      state: collapsed
-      display: hover
-    # This configuration turns the single value into a progress gauge
-    custom_color_enabled: true
-    enable_conditional_formatting: true
-    show_comparison_label: true
-    enable_summary: true
-    summary_text: "of 100% Target"
+    custom_color: "#1A73E8"
     row: 2
     col: 6
     width: 6
     height: 4
 
-
   - name: kpi_total_files_completed
-    title: "Total Files Completed"
+    title: "Final Completion (UAT)"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
     fields: [lidl_tracker.total_files_completed]
     listen:
       Department: lidl_tracker.department
-    note:
-      text: "Count of files complted"
-      state: collapsed
-      display: hover
-    custom_color_enabled: true
-    enable_conditional_formatting: true
-    conditional_formatting: [
-      # {type: greater than, value: 0, background_color: "#FCE8E6", font_color: "#C5221F"}
-    ]
+    custom_color: "#137333" # Green for Finished work
     row: 2
     col: 12
     width: 6
     height: 4
 
   - name: kpi_total_files_stuck
-    title: "Total Files Stuck"
+    title: "Active Stagnation Alert"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
     fields: [lidl_tracker.total_files_stuck]
     listen:
       Department: lidl_tracker.department
-    note:
-      text: "Count of files stuck at either the discovery, buld, or test Phase "
-      state: collapsed
-      display: hover
-    custom_color_enabled: true
-    enable_conditional_formatting: true
-    conditional_formatting: [
-      {type: greater than, value: 10, background_color: "#FFF2CC", font_color: "#B45F06"}
-    ]
+    custom_color: "#C5221F" # Red for Risk
     row: 2
     col: 18
     width: 6
     height: 4
 
   # ===========================================================================
-  # TIER 2: MID-LEVEL METRICS (Remaining | Velocity | Adherence)
+  # TIER 2: PACE & SCHEDULE TARGETS
   # ===========================================================================
 
   - name: title_mid_metrics
     type: text
-    title_text: "2. Pace & Schedule Targets (Trajectory towards April 2026.)"
+    title_text: "2. Pace & Schedule Targets (Trajectory towards April 2026 Deadline)"
     row: 6
     col: 0
     width: 24
     height: 2
 
   - name: kpi_remaining_scope
-    title: "Remaining Scope"
-    note_text: "Items left to build"
+    title: "Backlog (Remaining Build)"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
@@ -148,122 +116,170 @@
     row: 8
     col: 0
     width: 8
-    height: 5
+    height: 4
 
-  - name: kpi_velocity_req
-    title: "Required Daily Pace"
+  - name: velocity_kpi
+    title: "Target Output Rate"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
     fields: [lidl_tracker.required_daily_velocity]
     listen:
       Department: lidl_tracker.department
-    note:
-      text: "Work rate required to meet the set deadline."
-      state: collapsed
-      display: hover
-    # Conditional formatting applies to the background since font is handled in HTML
-    custom_color_enabled: true
-    enable_conditional_formatting: true
-    conditional_formatting: [
-      {type: greater than, value: 5, background_color: "#FCE8E6", font_color: "#C5221F"} # Red BG if pace is too high
-    ]
+    custom_color: "#1A73E8"
+    show_single_value_title: true
+    single_value_title: "Files Needed / Day (Working Days)"
+    value_format: "0.00"
     row: 8
     col: 8
     width: 8
-    height: 5
+    height: 4
 
-  - name: kpi_stagnation_quality
-    title: "Stagnation Safety Score"
-    note:
-      text: "Ratio: Client Wait (Safe) vs. Internal Stuck. 100% Score: Great! Everything stopped is waiting on the client. 0% Score: Critical! Everything stopped is stuck internally"
-      state: collapsed
-      display: hover
+  - name: kpi_total_files_received
+    title: "Ingestion Volume"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
-    fields: [lidl_tracker.percent_stagnation_safety]
-    filters:
-      lidl_tracker.overall_health: "On Track, Completed"
+    fields: [lidl_tracker.total_files_received]
     listen:
       Department: lidl_tracker.department
-    custom_color_enabled: true
-    enable_conditional_formatting: true
-    conditional_formatting: [
-      {type: less than, value: 0.8, background_color: "#FCE8E6", font_color: "#C5221F"}
-    ]
     row: 8
     col: 16
     width: 8
-    height: 5
-
+    height: 4
 
   # ===========================================================================
-  # TIER 3: CHARTS (All visuals moved down)
+  # TIER 3: PHASE & COMPLEXITY VISUALS
   # ===========================================================================
 
-  - name: viz_phase_breakdown
-    title: "Phase Breakdown"
+  - name: title_charts
+    type: text
+    title_text: "3. Operational Distribution (Volume & Complexity)"
+    row: 12
+    col: 0
+    width: 24
+    height: 2
+
+  - name: viz_phase_snapshot
+    title: "Exclusive Snapshot: Where Files Are Now"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: looker_column
     fields: [lidl_tracker.current_pipeline_stage, lidl_tracker.count]
+    filters:
+      lidl_tracker.current_pipeline_stage: "-Pre-Backlog"
     sorts: [lidl_tracker.current_pipeline_stage]
     listen:
       Department: lidl_tracker.department
-    x_axis_gridlines: false
-    y_axis_gridlines: true
     show_value_labels: true
-    label_density: 25
-    legend_position: center
     series_colors:
       lidl_tracker.count: "#1A73E8"
-    row: 13
+    row: 14
     col: 0
     width: 12
     height: 8
 
   - name: viz_throughput_tshirt
-    title: "Complexity Distribution"
-    subtitle_text: "Stacked: Completed (Green) over Total (Grey)"
+    title: "Complexity Mix vs. Completion"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: looker_column
-    fields: [lidl_tracker.tshirt_size, lidl_tracker.count_dev_completed, lidl_tracker.count]
+    fields: [lidl_tracker.tshirt_size, lidl_tracker.count_dev_completed, lidl_tracker.count_remaining_dev]
+    filters:
+      lidl_tracker.tshirt_size: "-NULL"
     sorts: [lidl_tracker.tshirt_size]
     listen:
       Department: lidl_tracker.department
-    x_axis_gridlines: false
-    y_axis_gridlines: true
-    show_value_labels: true
     stacking: normal
     series_colors:
       lidl_tracker.count_dev_completed: "#137333"
-      lidl_tracker.count: "#E8EAED"
-    row: 13
+      lidl_tracker.count_remaining_dev: "#E8EAED"
+    series_labels:
+      lidl_tracker.count_dev_completed: "Completed"
+      lidl_tracker.count_remaining_dev: "Remaining"
+    row: 14
     col: 12
     width: 12
     height: 8
 
+  # ===========================================================================
+  # TIER 4: PERFORMANCE & DETAIL
+  # ===========================================================================
+
+  - name: title_performance
+    type: text
+    title_text: "4. Resource Performance & Detailed Status Ledger"
+    row: 22
+    col: 0
+    width: 24
+    height: 2
+
   - name: viz_leaderboard
-    title: "Engineer Output Leaderboard"
+    title: "Engineer Output Leaderboard (Status: Test Completed)"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: looker_column
-    fields: [lidl_tracker.incentro_owner, lidl_tracker.count_build_completed]
+    fields: [lidl_tracker.incentro_owner, lidl_tracker.count_dev_completed]
     filters:
       lidl_tracker.incentro_owner: "-NULL"
-    sorts: [lidl_tracker.count_build_completed desc]
+    sorts: [lidl_tracker.count_dev_completed desc]
     listen:
       Department: lidl_tracker.department
-    x_axis_gridlines: false
-    y_axis_gridlines: true
     show_value_labels: true
-    # Slanted labels to support Vertical Bars
-    x_axis_label_rotation: -45
     series_colors:
-      lidl_tracker.count_build_completed: "#4285F4"
-    row: 21
+      lidl_tracker.count_dev_completed: "#34A853"
+    row: 24
     col: 0
-    width: 24
+    width: 12
     height: 9
+
+  # - name: phase_status_pivot_table
+  #   title: "Project Milestone Ledger (Discovery -> Build -> Test)"
+  #   model: lidl_project_tracker
+  #   explore: project_status_summary # Uses the Unpivoted View
+  #   type: looker_grid
+  #   fields: [project_status_summary.stage, project_status_summary.status, project_status_summary.count]
+  #   pivots: [project_status_summary.status]
+  #   show_totals: true
+  #   show_row_totals: true
+  #   table_theme: white
+  #   row: 24
+  #   col: 12
+  #   width: 12
+  #   height: 9
+
+  - name: phase_status_pivot_table
+    title: "Project Milestone Ledger"
+    model: lidl_project_tracker
+    explore: project_status_summary
+    type: looker_grid
+
+    fields:
+      - project_status_summary.stage
+      - project_status_summary.status
+      - project_status_summary.count
+
+    pivots: [project_status_summary.status]
+
+    show_totals: true
+    show_row_totals: false
+
+    table_theme: white
+
+    # 👀 Font size upgrades
+    header_font_size: 18      # was ~14
+    font_size: 14             # body text larger
+    row_height: compact       # keeps it from getting tall
+
+    conditional_formatting:
+      - type: greater than
+        value: 0
+        background_color: "#E8F5E9"
+        font_color: "#1B5E20"
+        fields: [project_status_summary.count]
+
+    row: 24
+    col: 12
+    width: 12
+    height: 9
+ # ↓ reduce height to kill dead space

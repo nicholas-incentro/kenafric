@@ -1,6 +1,7 @@
 connection: "@{CONNECTION}"
 
 include: "/explores/lidl/progress.explore.lkml"
+include: "/explores/lidl/project_status_summary.explore.lkml"
 include: "/dashboards/*.dashboard"
 
 # Datagroups define a caching policy for an Explore. To learn more,
