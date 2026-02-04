@@ -188,13 +188,13 @@ view: lidl_tracker {
         -- 1. Completed Projects
 
         -- 2. Active Development Stages (highest priority)
-        WHEN ${status_uat} IS NOT NULL OR ${status_test} = 'Completed' THEN '5. UAT'
-        WHEN ${status_test} IS NOT NULL OR ${status_build} = 'Completed' THEN '4. Test'
-        WHEN ${status_build} IS NOT NULL OR ${status_discovery} = 'Completed' THEN '3. Build'
-        WHEN ${status_discovery} IS NOT NULL OR ${status_analyzed} = 'Completed' THEN '2. Discovery'
+        WHEN ${status_uat} IS NOT NULL OR ${status_test} = 'Completed' THEN 'UAT'
+        WHEN ${status_test} IS NOT NULL OR ${status_build} = 'Completed' THEN 'Test'
+        WHEN ${status_build} IS NOT NULL OR ${status_discovery} = 'Completed' THEN 'Build'
+        WHEN ${status_discovery} IS NOT NULL OR ${status_analyzed} = 'Completed' THEN 'Discovery'
 
         -- 3. Files in Analysis (The very first action after receipt)
-        WHEN ${status_analyzed} = 'Completed' THEN '1. Analysis'
+        WHEN ${status_analyzed} = 'Completed' THEN 'Analysis'
 
       -- 4. THE BACKLOG: Files received but no Analysis, Discovery, Build, or Test started
       WHEN ${file_sent_to_incentro} THEN 'Not Analyzed'
@@ -213,11 +213,11 @@ view: lidl_tracker {
       CASE
         WHEN ${current_pipeline_stage} = 'Not Received' THEN 0
         WHEN ${current_pipeline_stage} = 'Not Analyzed' THEN 1
-        WHEN ${current_pipeline_stage} = '1. Analysis' THEN 2
-        WHEN ${current_pipeline_stage} = '2. Discovery' THEN 3
-        WHEN ${current_pipeline_stage} = '3. Build' THEN 4
-        WHEN ${current_pipeline_stage} = '4. Test' THEN 5
-        WHEN ${current_pipeline_stage} = '5. UAT' THEN 6
+        WHEN ${current_pipeline_stage} = 'Analysis' THEN 2
+        WHEN ${current_pipeline_stage} = 'Discovery' THEN 3
+        WHEN ${current_pipeline_stage} = 'Build' THEN 4
+        WHEN ${current_pipeline_stage} = 'Test' THEN 5
+        WHEN ${current_pipeline_stage} = 'UAT' THEN 6
         ELSE 99
       END ;;
   }
