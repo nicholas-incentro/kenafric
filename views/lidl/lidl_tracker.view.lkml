@@ -409,26 +409,68 @@ view: lidl_tracker {
   }
 
   # ==========================================================================
-  # 👷‍♀️ EXECUTION TEAM
+  # 👷‍♀️ TEAM (INCENTRO)
   # ==========================================================================
 
   dimension: incentro_owner {
     label: "Incentro Engineer"
+    description: "The engineer responsible for the migration work"
     group_label: "Execution Team"
     type: string
     sql: ${TABLE}.Incentro_Owner ;;
     drill_fields: [real_file_name, current_pipeline_stage, status_uat]
   }
 
+  dimension: file_sent_to_incentro {
+    label: "Handover to Incentro?"
+    group_label: "Execution Team"
+    type: yesno
+    sql: ${TABLE}.File_Sent_to_Incentro ;;
+  }
+
   # ==========================================================================
-  # 🚦 PIPELINE STAGES & HEALTH
+  # 🚦 SEQUENTIAL PIPELINE STAGES
   # ==========================================================================
 
-  dimension: status_analyzed { group_label: "Stages" sql: ${TABLE}.Analysed ;; }
-  dimension: status_discovery { group_label: "Stages" sql: ${TABLE}.Discovey___Defination ;; }
-  dimension: status_build { group_label: "Stages" sql: ${TABLE}.Build ;; }
-  dimension: status_test { group_label: "Stages" sql: ${TABLE}.Test ;; }
-  dimension: status_uat { group_label: "Stages" sql: ${TABLE}.UAT ;; }
+  dimension: status_analyzed {
+    label: "1. Analysis"
+    group_label: "Stages"
+    type: string
+    sql: ${TABLE}.Analysed ;;
+    html: @{status_color_formatting} ;;
+  }
+
+  dimension: status_discovery {
+    label: "2. Discovery"
+    group_label: "Stages"
+    type: string
+    sql: ${TABLE}.Discovey___Defination ;;
+    html: @{status_color_formatting} ;;
+  }
+
+  dimension: status_build {
+    label: "3. Build"
+    group_label: "Stages"
+    type: string
+    sql: ${TABLE}.Build ;;
+    html: @{status_color_formatting} ;;
+  }
+
+  dimension: status_test {
+    label: "4. Test"
+    group_label: "Stages"
+    type: string
+    sql: ${TABLE}.Test ;;
+    html: @{status_color_formatting} ;;
+  }
+
+  dimension: status_uat {
+    label: "5. UAT"
+    group_label: "Stages"
+    type: string
+    sql: ${TABLE}.UAT ;;
+    html: @{status_color_formatting} ;;
+  }
 
   dimension: current_pipeline_stage {
     label: "Current Stage"
@@ -513,7 +555,82 @@ view: lidl_tracker {
   # 📊 MEASURES
   # ==========================================================================
 
-  measure: count { label: "Total Files" type: count }
+  measure: count {
+    label: "Total Files"
+    type: count
+    drill_fields: [file_details*]
+  }
+
+
+### Measures ###
+
+  measure: total_files_received {
+    view_label: "Execution Metrics"
+    label: "Total Files Received"
+    description: "Count of files where Handover to Incentro is Yes"
+    type: count
+    filters: [file_sent_to_incentro: "yes"]
+  }
+
+  measure: total_files_completed {
+    view_label: "Execution Metrics"
+    label: "Total Files Completed"
+    description: "Count of files where the Test stage is completed"
+    type: count
+    filters: [status_test: "Completed"]
+  }
+
+  dimension: is_stuck_anywhere {
+    hidden: yes
+    type: yesno
+    sql: ${status_discovery} = 'Stuck'
+      OR ${status_build} = 'Stuck'
+      OR ${status_test} = 'Stuck' ;;
+  }
+
+  measure: total_files_stuck_any {
+    label: "Total Files Stuck (Any Stage)"
+    type: count
+    filters: [is_stuck_anywhere: "yes"]
+  }
+
+  measure: total_files_stuck {
+    view_label: "Execution Metrics"
+    label: "Total Files Stuck"
+    description: "Count of files that are 'stuck' in Discovery, Build, or Test stages"
+    type: count
+    # We use a SQL filter here because standard LookML filters use AND logic,
+    # and we want to count the file if ANY of these stages are stuck.
+    filters: [is_stuck_anywhere: "yes"]
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   measure: count_dev_completed {
     label: "Dev Completed (Ready for UAT)"

@@ -56,28 +56,21 @@
 
 
     # Using the Single Value type with 'progress' style creates a clean linear gauge.
-  - name: viz_schedule_gauge
-    title: "Progress to Target"
+  - name: kpi_total_files_received
+    title: "Total files received"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
-    fields: [lidl_tracker.percent_dev_completion]
+    fields: [lidl_tracker.total_files_received]
     listen:
       Department: lidl_tracker.department
     note:
-      text: "Percentage of files completed."
+      text: "Count of files received."
       state: collapsed
       display: hover
     # This configuration turns the single value into a progress gauge
     custom_color_enabled: true
     enable_conditional_formatting: true
-    conditional_formatting: [
-      {type: less than, value: 1.0, background_color: "#FFFFFF", font_color: "#1A73E8"}
-    ]
-    comparison_type: progress_percentage
-    comparison_label: "Target Completion"
-    # Setting the 'value' to 1.0 (100%) gives the bar a target to fill towards
-    comparison_reverse_colors: false
     show_comparison_label: true
     enable_summary: true
     summary_text: "of 100% Target"
@@ -87,39 +80,38 @@
     height: 4
 
 
-  - name: kpi_stagnation
-    title: "⚠️ Stuck / Blocked"
+  - name: kpi_total_files_completed
+    title: "Total Files Completed"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
-    fields: [lidl_tracker.count_stuck]
+    fields: [lidl_tracker.total_files_completed]
     listen:
       Department: lidl_tracker.department
     note:
-      text: "Number of files flagged as 'Stuck' in Build, or Test."
+      text: "Count of files complted"
       state: collapsed
       display: hover
     custom_color_enabled: true
     enable_conditional_formatting: true
     conditional_formatting: [
-      {type: greater than, value: 0, background_color: "#FCE8E6", font_color: "#C5221F"}
+      # {type: greater than, value: 0, background_color: "#FCE8E6", font_color: "#C5221F"}
     ]
     row: 2
     col: 12
     width: 6
     height: 4
 
-  - name: kpi_pending_client
-    title: "⏳ Pending Client UAT"
-    note_text: "Delivered, awaiting sign-off"
+  - name: kpi_total_files_stuck
+    title: "Total Files Stuck"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
-    fields: [lidl_tracker.count_pending_client_action]
+    fields: [lidl_tracker.total_files_stuck]
     listen:
       Department: lidl_tracker.department
     note:
-      text: "Number of files awaiting UAT from Lidl."
+      text: "Count of files stuck at either the discovery, buld, or test Phase "
       state: collapsed
       display: hover
     custom_color_enabled: true
