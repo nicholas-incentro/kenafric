@@ -136,7 +136,7 @@
     height: 4
 
   - name: kpi_total_files_received
-    title: "Ingestion Volume"
+    title: "Total Files Received"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
