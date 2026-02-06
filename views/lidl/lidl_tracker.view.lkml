@@ -348,6 +348,25 @@ view: lidl_tracker {
     sql: 1.0 * ${count_stuck} / NULLIF(${count_active_wip}, 0) ;;
   }
 
+  measure: actual_work_rate {
+    view_label: "Execution Metrics"
+    label: "Actual Work Rate (Files/Day)"
+    description: "Actual files completed (Test = Completed) per working day since Jan 26, 2026"
+    type: number
+    value_format_name: decimal_2
+    sql:
+      1.0 * ${count_dev_completed} /
+      NULLIF(
+        -- Calculate working days since Jan 26, 2026
+        (DATE_DIFF(CURRENT_DATE(), DATE('2026-01-26'), DAY) + 1)
+        - (FLOOR((DATE_DIFF(CURRENT_DATE(), DATE('2026-01-26'), DAY) + 1) / 7) * 2)
+      , 0) ;;
+    html:
+      <div style="color: #137333; font-weight: bold;">
+        {{ rendered_value }} Files / Day
+      </div> ;;
+  }
+
   # --- Funnel Metrics ---
   measure: funnel_1_analyzed { group_label: "Funnel" type: count filters: [status_analyzed: "Completed"] }
   measure: funnel_2_discovery { group_label: "Funnel" type: count filters: [status_discovery: "Completed"] }
