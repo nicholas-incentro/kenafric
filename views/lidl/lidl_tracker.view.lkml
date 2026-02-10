@@ -53,7 +53,7 @@ view: lidl_tracker {
     description: "S, M, L, XL"
     group_label: "File Details"
     type: string
-    sql: ${TABLE}.Tshirt_Size ;;
+    sql: ${TABLE}.T_shirt_Size ;;
     order_by_field: tshirt_sort_index
   }
 
