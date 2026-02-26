@@ -123,7 +123,7 @@ view: lidl_tracker {
     type: number
     value_format_name: decimal_2
     sql:
-      1.0 * ${count_remaining_dev} /
+      1.0 * ${total_remaining_work} /
       NULLIF(
         (DATE_DIFF(DATE('2026-04-01'), CURRENT_DATE(), DAY) + 1)
         - (FLOOR((DATE_DIFF(DATE('2026-04-01'), CURRENT_DATE(), DAY) + 1) / 7) * 2)
@@ -222,11 +222,7 @@ view: lidl_tracker {
       END ;;
   }
 
-  # dimension: stage_sort_order {
-  #   hidden: yes
-  #   type: number
-  #   sql: CAST(LEFT(${current_pipeline_stage}, 1) AS INT64) ;;
-  # }
+
 
   dimension: overall_health {
     label: "Health Status"
@@ -276,6 +272,13 @@ view: lidl_tracker {
     drill_fields: [file_details*]
   }
 
+  measure: total_valid_files {
+    view_label: "Execution Metrics"
+    label: "Total valid files"
+    description: "Count of files where Handover to Incentro is Yes"
+    sql: (${count} - 78) ;;
+  }
+
   measure: total_files_received {
     view_label: "Execution Metrics"
     label: "Total Files Received"
@@ -287,9 +290,10 @@ view: lidl_tracker {
   measure: total_files_completed {
     view_label: "Execution Metrics"
     label: "Total Files Completed"
-    description: "Count of files where the Test stage is completed"
+    description: "Count of files where the Test stage is completed (Ready for UAT)"
     type: count
     filters: [status_test: "Completed"]
+    drill_fields: [file_details*]
   }
 
   measure: total_files_stuck {
@@ -300,13 +304,6 @@ view: lidl_tracker {
     filters: [is_stuck_anywhere: "yes"]
   }
 
-  measure: count_dev_completed {
-    label: "Dev Completed (Ready for UAT)"
-    type: count
-    filters: [status_test: "Completed"]
-    drill_fields: [file_details*]
-  }
-
   measure: count_pending_client_action {
     label: "⏳ Pending Client UAT"
     type: count
@@ -314,17 +311,17 @@ view: lidl_tracker {
     drill_fields: [file_details*]
   }
 
-  measure: count_remaining_dev {
+  measure: total_remaining_work {
     label: "Remaining Dev Scope"
     type: number
-    sql: ${count} - ${count_dev_completed} ;;
+    sql: ${total_valid_files} - ${total_files_completed} ;;
   }
 
-  measure: percent_dev_completion {
+  measure: percent_completion {
     label: "% Dev Completion"
     type: number
     value_format_name: percent_1
-    sql: 1.0 * ${count_dev_completed} / NULLIF(${count}, 0) ;;
+    sql: 1.0 * ${total_files_completed} / NULLIF(${total_valid_files}, 0) ;;
   }
 
   measure: count_active_wip {
@@ -355,7 +352,7 @@ view: lidl_tracker {
     type: number
     value_format_name: decimal_2
     sql:
-      1.0 * ${count_dev_completed} /
+      1.0 * ${total_files_completed} /
       NULLIF(
         -- Calculate working days since Jan 26, 2026
         (DATE_DIFF(CURRENT_DATE(), DATE('2026-01-26'), DAY) + 1)
