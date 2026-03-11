@@ -308,7 +308,7 @@ view: lidl_tracker {
 
   measure: total_files_approved {
     view_label: "Execution Metrics"
-    label: "Total Approved Files "
+    label: "Total Approved Files"
     description: "Count of files that have been approved by the client"
     type: count
     filters: [status_uat: "Approved"]
@@ -316,7 +316,7 @@ view: lidl_tracker {
 
   measure: total_files_rejected {
     view_label: "Execution Metrics"
-    label: "Total Rejected Files "
+    label: "Total Files Not Approved"
     description: "Count of files that have been rejected by the client"
     type: count
     filters: [status_uat: "Not Approved"]

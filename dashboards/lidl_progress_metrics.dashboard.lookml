@@ -419,7 +419,7 @@
     height: 4
 
   - name: kpi_total_files_completed
-    title: "Tested"
+    title: "Internally Completed"
     model: lidl_project_tracker
     explore: lidl_tracker
     type: single_value
@@ -495,7 +495,7 @@
       Department: lidl_tracker.department
     custom_color: "#C5221F" # Changed to red for 'Not Approved' visibility
     show_single_value_title: true
-    single_value_title: "Total Files Rejected"
+    single_value_title: "Total Files Not Approved"
     # value_format: "0.00"
     note_state: collapsed
     note_display: below
