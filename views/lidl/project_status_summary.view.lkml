@@ -19,6 +19,13 @@ view: project_status_summary {
       SELECT '3. Test', CAST(Test AS STRING)
       FROM `still-sensor-360721.datastream.lidl_tracker`
       WHERE Test IS NOT NULL
+
+      UNION ALL
+
+      -- 4. UAT
+      SELECT '4. UAT', CAST(UAT AS STRING)
+      FROM `still-sensor-360721.datastream.lidl_tracker`
+      WHERE Test IS NOT NULL
       ;;
   }
 

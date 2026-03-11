@@ -188,6 +188,7 @@ view: lidl_tracker {
         -- 1. Completed Projects
 
         -- 2. Active Development Stages (highest priority)
+        WHEN ${status_uat} = 'Approved' THEN 'Approved'
         WHEN ${status_uat} IS NOT NULL OR ${status_test} = 'Completed' THEN 'UAT'
         WHEN ${status_test} IS NOT NULL OR ${status_build} = 'Completed' THEN 'Test'
         WHEN ${status_build} IS NOT NULL OR ${status_discovery} = 'Completed' THEN 'Build'
@@ -302,6 +303,31 @@ view: lidl_tracker {
     description: "Count of files that are 'stuck' in Discovery, Build, or Test stages"
     type: count
     filters: [is_stuck_anywhere: "yes"]
+  }
+
+
+  measure: total_files_approved {
+    view_label: "Execution Metrics"
+    label: "Total Approved Files "
+    description: "Count of files that have been approved by the client"
+    type: count
+    filters: [status_uat: "Approved"]
+  }
+
+  measure: total_files_rejected {
+    view_label: "Execution Metrics"
+    label: "Total Rejected Files "
+    description: "Count of files that have been rejected by the client"
+    type: count
+    filters: [status_uat: "Not Approved"]
+  }
+
+  measure: total_files_pending_approval {
+    view_label: "Execution Metrics"
+    label: "Total Files Pending Approval"
+    description: "Count of files that are pending approval by the client"
+    type: count
+    filters: [status_uat: "Pending Approval"]
   }
 
   measure: count_pending_client_action {
