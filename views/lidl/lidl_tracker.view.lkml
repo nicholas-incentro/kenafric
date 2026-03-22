@@ -140,7 +140,7 @@ view: lidl_tracker {
     group_label: "Stages"
     type: string
     # Handling Boolean Analysed column by casting to string
-    sql: CASE WHEN ${TABLE}.Analysed THEN 'Completed' ELSE 'Not Started' END ;;
+    sql: CASE WHEN ${TABLE}.File_sent_to_Redeveloped_Folder THEN 'Completed' ELSE 'Not Started' END ;;
     html: @{status_color_formatting} ;;
   }
 
